@@ -13,7 +13,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 日志，直接对应持久层
+ * Catalog类起到的作用相当于数据库的目录，记录了数据库中有哪些数据表，每个数据表对应的ID、数据文件、主键是什么东西，
+ * 并定义了一系列增删查的方法，同时Database类中会有一个Database.getCatalog()的静态方法来访问整个数据库的Catalog
  * <p>
  * The Catalog keeps track of all available tables in the database and their
  * associated schemas.
