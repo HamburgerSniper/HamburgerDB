@@ -1,13 +1,13 @@
 package simpledb;
 
-import static org.junit.Assert.assertEquals;
 import junit.framework.JUnit4TestAdapter;
-
 import org.junit.Test;
 
 import simpledb.common.Utility;
 import simpledb.storage.*;
 import simpledb.systemtest.SimpleDbTestBase;
+
+import static junit.framework.TestCase.assertEquals;
 
 public class TupleTest extends SimpleDbTestBase {
 
