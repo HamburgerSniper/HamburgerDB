@@ -10,6 +10,10 @@ import java.util.*;
 
 /**
  * The Join operator implements the relational join operation.
+ *
+ * Join操作是对两个数据表进行操作，将分别来自于两个表的，满足一定条件的元组a和b合成一个新的元组c，
+ * 并且c的所有属性是a和b汇总得到的，比如a元组的是(a1,a2,a3)，b元组是(b1,b2)且ab满足join的判断条件，
+ * 那么新生成的c就是(a1,a2,a3,b1,b2)
  */
 public class Join extends Operator {
 

@@ -88,6 +88,8 @@ public class Filter extends Operator {
      * child operator, applying the predicate to them and returning those that
      * pass the predicate (i.e. for which the Predicate.filter() returns true.)
      *
+     * 从child那里读取一个个tuple并进行判断，直到找到一个合适的可以返回的元组才能返回，如果child的遍历已经结束了，那么就返回一个null
+     *
      * @return The next tuple that passes the filter, or null if there are no
      * more tuples
      * @see Predicate#filter
