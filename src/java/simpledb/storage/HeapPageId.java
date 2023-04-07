@@ -4,9 +4,13 @@ package simpledb.storage;
  * Unique identifier for HeapPage objects.
  */
 public class HeapPageId implements PageId {
-
+    /**
+     * 数据表id
+     */
     private int tableId;
-
+    /**
+     * 数据表的页偏移量
+     */
     private int pageNum;
 
     /**
@@ -64,7 +68,7 @@ public class HeapPageId implements PageId {
         // some code goes here
         if (o instanceof HeapPageId) {
             HeapPageId heapPageId = (HeapPageId) o;
-            if (this.getTableId() == heapPageId.getTableId() && this.pageNum == heapPageId.getPageNumber()) {
+            if (this.getTableId() == heapPageId.getTableId() && this.getPageNumber() == heapPageId.getPageNumber()) {
                 return true;
             }
         }
@@ -86,4 +90,11 @@ public class HeapPageId implements PageId {
         return data;
     }
 
+    @Override
+    public String toString() {
+        return "HeapPageId{" +
+                "tableId=" + tableId +
+                ", pageNum=" + pageNum +
+                '}';
+    }
 }
