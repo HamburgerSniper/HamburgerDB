@@ -112,7 +112,7 @@ public class Aggregate extends Operator {
         }
         try {
             String fieldName = child.getTupleDesc().getFieldName(gfield);
-            return fieldName ;
+            return fieldName;
         } catch (NoSuchElementException e) {
             return null;
         }
@@ -132,10 +132,10 @@ public class Aggregate extends Operator {
      */
     public String aggregateFieldName() {
         // some code goes here
-        try{
+        try {
             String fieldName = child.getTupleDesc().getFieldName(afield);
             return fieldName;
-        }catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return null;
         }
     }
@@ -154,6 +154,7 @@ public class Aggregate extends Operator {
 
     /**
      * open()函数中，根据传入的数据迭代器迭代每一个tuple，用聚合器进行聚合，以此生成一个最终结果的迭代器
+     *
      * @throws NoSuchElementException
      * @throws DbException
      * @throws TransactionAbortedException
@@ -162,7 +163,7 @@ public class Aggregate extends Operator {
             TransactionAbortedException {
         // some code goes here
         child.open();
-        while(child.hasNext()){
+        while (child.hasNext()) {
             Tuple next = child.next();
             aggregator.mergeTupleIntoGroup(next);
         }
@@ -179,7 +180,7 @@ public class Aggregate extends Operator {
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        if(opIterator!=null && opIterator.hasNext()){
+        if (opIterator != null && opIterator.hasNext()) {
             return opIterator.next();
         }
         return null;

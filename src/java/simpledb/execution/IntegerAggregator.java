@@ -21,6 +21,7 @@ public class IntegerAggregator implements Aggregator {
     private Type gbfieldType;
     private Op what;
     private Map<Field, List<Field>> group;
+
     /**
      * Aggregate constructor
      *
@@ -51,15 +52,15 @@ public class IntegerAggregator implements Aggregator {
         // some code goes here
         Field aField = tup.getField(afield);
         Field gField = null;
-        if(this.gbfield!=-1){
+        if (this.gbfield != -1) {
             gField = tup.getField(this.gbfield);
         }
-        if(this.group.containsKey(gField)){
+        if (this.group.containsKey(gField)) {
             group.get(gField).add(aField);
-        }else{
+        } else {
             List<Field> list = new ArrayList<>();
             list.add(aField);
-            group.put(gField,list);
+            group.put(gField, list);
         }
     }
 
@@ -73,7 +74,7 @@ public class IntegerAggregator implements Aggregator {
      */
     public OpIterator iterator() {
         // some code goes here
-        return new AggregateIter(group,gbfield,gbfieldType,what);
+        return new AggregateIter(group, gbfield, gbfieldType, what);
     }
 
 }
