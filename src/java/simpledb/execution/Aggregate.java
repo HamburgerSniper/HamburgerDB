@@ -1,6 +1,7 @@
 package simpledb.execution;
 
 import simpledb.common.DbException;
+import simpledb.common.Type;
 import simpledb.storage.Tuple;
 import simpledb.storage.TupleDesc;
 import simpledb.transaction.TransactionAbortedException;
@@ -18,6 +19,33 @@ public class Aggregate extends Operator {
     private static final long serialVersionUID = 1L;
 
     /**
+     * SELECT SUM(fee) AS country_group_total_fee, country FROM member GROUP BY country
+     */
+
+    private OpIterator child;
+    /**
+     * afield 是指tuple的第几个字段进行聚合字段，相当于上面SQL语句中的fee
+     */
+    private int afield;
+    /**
+     * gfield 是指根据tuple的第几个字段进行聚合操作，当无需分组时groupField值为1
+     * 相当于上面SQL语句中的country
+     */
+    private int gfield;
+    /**
+     * op是进行聚合运算的操作符，相当于上述SQL语句的SUM
+     */
+    private Aggregator.Op aop;
+    /**
+     * 具体的聚合器，用于过滤
+     */
+    private final Aggregator aggregator;
+    /**
+     * 最终结果的迭代器
+     */
+    private OpIterator opIterator;
+
+    /**
      * Constructor.
      * <p>
      * Implementation hint: depending on the type of afield, you will want to
@@ -32,6 +60,31 @@ public class Aggregate extends Operator {
      */
     public Aggregate(OpIterator child, int afield, int gfield, Aggregator.Op aop) {
         // some code goes here
+        this.child = child;
+        this.afield = afield;
+        this.gfield = gfield;
+        this.aop = aop;
+        Type fieldType = child.getTupleDesc().getFieldType(afield);
+        /* 根据有没有group by字段，以及聚合字段是什么类型分别进行创建 */
+        if (gfield != -1) {
+            if (fieldType.equals(Type.INT_TYPE)) {
+                // 这里要改一下
+                aggregator = new IntegerAggregator(gfield, child.getTupleDesc().getFieldType(gfield), afield, aop);
+            } else if (fieldType.equals(Type.STRING_TYPE)) {
+                aggregator = new StringAggregator(gfield, child.getTupleDesc().getFieldType(gfield), afield, aop);
+            } else {
+                aggregator = null;
+            }
+        } else {
+            if (fieldType.equals(Type.INT_TYPE)) {
+                aggregator = new IntegerAggregator(gfield, null, afield, aop);
+            } else if (fieldType.equals(Type.STRING_TYPE)) {
+                aggregator = new StringAggregator(gfield, null, afield, aop);
+            } else {
+                aggregator = null;
+            }
+        }
+        this.opIterator = aggregator.iterator();
     }
 
     /**
@@ -41,7 +94,10 @@ public class Aggregate extends Operator {
      */
     public int groupField() {
         // some code goes here
-        return -1;
+        if (gfield == -1) {
+            return Aggregator.NO_GROUPING;
+        }
+        return gfield;
     }
 
     /**
@@ -51,7 +107,15 @@ public class Aggregate extends Operator {
      */
     public String groupFieldName() {
         // some code goes here
-        return null;
+        if (gfield == -1) {
+            return null;
+        }
+        try {
+            String fieldName = child.getTupleDesc().getFieldName(gfield);
+            return fieldName ;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     /**
@@ -59,7 +123,7 @@ public class Aggregate extends Operator {
      */
     public int aggregateField() {
         // some code goes here
-        return -1;
+        return afield;
     }
 
     /**
@@ -68,7 +132,12 @@ public class Aggregate extends Operator {
      */
     public String aggregateFieldName() {
         // some code goes here
-        return null;
+        try{
+            String fieldName = child.getTupleDesc().getFieldName(afield);
+            return fieldName;
+        }catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     /**
@@ -76,16 +145,29 @@ public class Aggregate extends Operator {
      */
     public Aggregator.Op aggregateOp() {
         // some code goes here
-        return null;
+        return aop;
     }
 
     public static String nameOfAggregatorOp(Aggregator.Op aop) {
         return aop.toString();
     }
 
+    /**
+     * open()函数中，根据传入的数据迭代器迭代每一个tuple，用聚合器进行聚合，以此生成一个最终结果的迭代器
+     * @throws NoSuchElementException
+     * @throws DbException
+     * @throws TransactionAbortedException
+     */
     public void open() throws NoSuchElementException, DbException,
             TransactionAbortedException {
         // some code goes here
+        child.open();
+        while(child.hasNext()){
+            Tuple next = child.next();
+            aggregator.mergeTupleIntoGroup(next);
+        }
+        opIterator.open();
+        super.open();
     }
 
     /**
@@ -97,11 +179,16 @@ public class Aggregate extends Operator {
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
+        if(opIterator!=null && opIterator.hasNext()){
+            return opIterator.next();
+        }
         return null;
     }
 
     public void rewind() throws DbException, TransactionAbortedException {
         // some code goes here
+        opIterator.rewind();
+        child.rewind();
     }
 
     /**
@@ -117,22 +204,26 @@ public class Aggregate extends Operator {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+        return opIterator.getTupleDesc();
     }
 
     public void close() {
         // some code goes here
+        child.close();
+        opIterator.close();
+        super.close();
     }
 
     @Override
     public OpIterator[] getChildren() {
         // some code goes here
-        return null;
+        return new OpIterator[]{this.child};
     }
 
     @Override
     public void setChildren(OpIterator[] children) {
         // some code goes here
+        this.child = children[0];
     }
 
 }
