@@ -108,14 +108,6 @@ public class TupleDesc implements Serializable {
 
     /**
      * 获取TDItem的数量
-     *
-     * @return
-     */
-    public int getItemLength() {
-        return this.tupleDescList.size();
-    }
-
-    /**
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {

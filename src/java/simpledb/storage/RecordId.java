@@ -9,21 +9,26 @@ import java.io.Serializable;
 public class RecordId implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * pageId : 页号
+     */
     private PageId pageId;
+    /**
+     * TupleNum : 页面偏移量
+     */
     private Integer tupleNumber;
 
     /**
      * Creates a new RecordId referring to the specified PageId and tuple
      * number.
      *
-     * @param pid     the pageid of the page on which the tuple resides
-     * @param tupleno the tuple number within the page.
+     * @param pid     the pageId of the page on which the tuple resides
+     * @param tupleNo the tuple number within the page.
      */
-    public RecordId(PageId pid, int tupleno) {
+    public RecordId(PageId pid, int tupleNo) {
         // some code goes here
         this.pageId = pid;
-        this.tupleNumber = tupleno;
+        this.tupleNumber = tupleNo;
     }
 
     /**
