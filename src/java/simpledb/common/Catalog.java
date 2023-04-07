@@ -30,7 +30,7 @@ public class Catalog {
     /**
      * Table：为Catalog存储的一个个表建立的辅助类，Table类的构造函数需要三个参数，
      * 第一个参数是DbFile类型，是table的内容；
-     * 第二个参数是String类型，是table 的name；
+     * 第二个参数是String类型，是table的name；
      * 第三个参数是pkeyField，代表表中主键的fieldName。
      */
     public class Table {
@@ -80,7 +80,7 @@ public class Catalog {
     }
 
     /**
-     * 创建一个<Interger,Table>的哈希表，用于存储已经实例化的表。
+     * 创建一个<Integer,Table>的哈希表，用于存储已经实例化的表。
      * <p>
      * Constructor.
      * Creates a new, empty catalog.
