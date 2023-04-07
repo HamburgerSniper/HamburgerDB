@@ -48,6 +48,10 @@ public class SeqScan implements OpIterator {
 
     }
 
+    public SeqScan(TransactionId tid, int tableId) {
+        this(tid, tableId, Database.getCatalog().getTableName(tableId));
+    }
+
     /**
      * @return return the table name of the table the operator scans. This should
      * be the actual name of the table in the catalog of the database
@@ -80,10 +84,6 @@ public class SeqScan implements OpIterator {
         // some code goes here
         this.tableId = tableId;
         this.tableAlias = tableAlias;
-    }
-
-    public SeqScan(TransactionId tid, int tableId) {
-        this(tid, tableId, Database.getCatalog().getTableName(tableId));
     }
 
     public void open() throws DbException, TransactionAbortedException {
