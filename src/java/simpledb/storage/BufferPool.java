@@ -10,6 +10,7 @@ import simpledb.transaction.TransactionId;
 import java.io.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +45,9 @@ public class BufferPool {
 
     private int numPages;
 
-    private Map<Integer,Page> buffer;
+//    private Map<Integer,Page> buffer;
+
+    private LRUCache<PageId, Page> buffer;
 
     /**
      * BufferPool 负责管理SimpleDB保存在内存中页的信息，因为内存不可能无限大
@@ -52,15 +55,17 @@ public class BufferPool {
      * lab1不需要我们管这些，我们要做的就是实现一个方法getPage()，它的实现逻辑也非常简单，就是根据输入的
      * 页号在buffer存储页的HashMap中进行查询，如果这个页不存在就调用
      * Database.getCatalog().getDatabaseFile这个方法把对应的页去读出来
-     *
+     * <p>
      * Creates a BufferPool that caches up to numPages pages.
      * 后期要改，暂时不支持并发，后期要进行加锁处理
+     *
      * @param numPages maximum number of pages in this buffer pool.
      */
     public BufferPool(int numPages) {
         // some code goes here
         this.numPages = numPages;
-        this.buffer = new HashMap<>(numPages);
+//        this.buffer = new HashMap<>(numPages);
+        this.buffer = new LRUCache<>(numPages);
     }
 
     public static int getPageSize() {
@@ -95,16 +100,17 @@ public class BufferPool {
     public Page getPage(TransactionId tid, PageId pid, Permissions perm)
             throws TransactionAbortedException, DbException {
         // some code goes here
-        if (!this.buffer.containsKey(pid.hashCode())) {
+        if (this.buffer.get(pid) == null) {
             // find the right page in DBFiles
             DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
             Page page = dbFile.readPage(pid);
-            if (buffer.size() > numPages) {
+            if (buffer.getSize() > numPages) {
                 evictPage();
             }
-            buffer.put(pid.hashCode(), page);
+            buffer.put(pid, page);
+            return page;
         }
-        return this.buffer.get(pid.hashCode());
+        return this.buffer.get(pid);
     }
 
     /**
@@ -171,6 +177,13 @@ public class BufferPool {
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
+        DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
+        //注意，insertTuple函数并不会
+        List<Page> pages = dbFile.insertTuple(tid, t);
+        for (Page page : pages) {
+            page.markDirty(true, tid);
+            buffer.put(page.getId(), page);
+        }
     }
 
     /**
@@ -190,6 +203,11 @@ public class BufferPool {
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
+        DbFile dbFile = Database.getCatalog().getDatabaseFile(t.getRecordId().getPageId().getTableId());
+        List<Page> pages = dbFile.deleteTuple(tid, t);
+        for (Page page : pages) {
+            page.markDirty(true, tid);
+        }
     }
 
     /**
@@ -200,7 +218,24 @@ public class BufferPool {
     public synchronized void flushAllPages() throws IOException {
         // some code goes here
         // not necessary for lab1
+        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
+        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
+        while (head != tail) {
+            Page page = head.value;
+            if (page != null && page.isDirty() != null) {
+                DbFile dbFile = Database.getCatalog().getDatabaseFile(page.getId().getTableId());
+                //记录日志
+                try {
+                    Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
+                    Database.getLogFile().force();
 
+                    dbFile.writePage(page);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            head = head.next;
+        }
     }
 
     /**
@@ -215,6 +250,16 @@ public class BufferPool {
     public synchronized void discardPage(PageId pid) {
         // some code goes here
         // not necessary for lab1
+        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
+        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
+        while (head != tail) {
+            PageId key = head.key;
+            if (key != null && key.equals(pid)) {
+                buffer.remove(head);
+                return;
+            }
+            head = head.next;
+        }
     }
 
     /**
@@ -225,6 +270,19 @@ public class BufferPool {
     private synchronized void flushPage(PageId pid) throws IOException {
         // some code goes here
         // not necessary for lab1
+        Page page = buffer.get(pid);
+
+        if (page.isDirty() != null) {
+            DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
+            try {
+                Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
+                Database.getLogFile().force();
+                page.markDirty(false, null);
+                dbFile.writePage(page);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -242,6 +300,28 @@ public class BufferPool {
     private synchronized void evictPage() throws DbException {
         // some code goes here
         // not necessary for lab1
+        Page page = buffer.getTail().prev.value;
+        if (page != null && page.isDirty() != null) {
+            findNotDirty();
+        } else {
+            // 不是脏页没改过，不需要写磁盘
+            buffer.discard();
+        }
+    }
+
+    private void findNotDirty() throws DbException {
+        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
+        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
+        tail = tail.prev;
+        while (head != tail) {
+            Page value = tail.value;
+            if (value != null && value.isDirty() == null) {
+                buffer.remove(tail);
+                return;
+            }
+            tail = tail.prev;
+        }
+        throw new DbException("no dirty page");
     }
 
 }
