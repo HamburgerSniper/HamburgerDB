@@ -256,9 +256,9 @@ public class HeapPage implements Page {
         // some code goes here
         // not necessary for lab1
         int tupleNumber = t.getRecordId().getTupleNumber();
-        if(isSlotUsed(tupleNumber) && tuples[tupleNumber].equals(t) ){
+        if (isSlotUsed(tupleNumber) && tuples[tupleNumber].equals(t)) {
             tuples[tupleNumber] = null;
-            markSlotUsed(tupleNumber,false);
+            markSlotUsed(tupleNumber, false);
             return;
         }
         throw new DbException("tuple is not in tuples");
