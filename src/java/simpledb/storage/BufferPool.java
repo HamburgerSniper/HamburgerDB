@@ -102,6 +102,7 @@ public class BufferPool {
         // some code goes here
         if (this.buffer.get(pid) == null) {
             // find the right page in DBFiles
+            // 找表名
             DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
             Page page = dbFile.readPage(pid);
             if (buffer.getSize() > numPages) {
@@ -296,6 +297,7 @@ public class BufferPool {
     /**
      * Discards a page from the buffer pool.
      * Flushes the page to disk to ensure dirty pages are updated on disk.
+     * 从缓冲池中丢弃一个页面。将页刷新到磁盘，以确保脏页在磁盘上得到更新。
      */
     private synchronized void evictPage() throws DbException {
         // some code goes here
