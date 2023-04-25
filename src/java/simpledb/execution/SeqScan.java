@@ -110,12 +110,12 @@ public class SeqScan implements OpIterator {
         int itemLen = tupleDesc.numFields();
         Type[] types = new Type[itemLen];
         String[] fieldNames = new String[itemLen];
-        for(int i=0;i<itemLen;i++){
+        for (int i = 0; i < itemLen; i++) {
             types[i] = tupleDesc.getFieldType(i);
-            fieldNames[i] = this.tableAlias +"."+ tupleDesc.getFieldName(i);
+            fieldNames[i] = this.tableAlias + "." + tupleDesc.getFieldName(i);
         }
 
-        return new TupleDesc(types,fieldNames);
+        return new TupleDesc(types, fieldNames);
     }
 
     public boolean hasNext() throws TransactionAbortedException, DbException {
