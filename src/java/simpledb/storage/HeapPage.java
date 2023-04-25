@@ -324,7 +324,7 @@ public class HeapPage implements Page {
     public int getNumEmptySlots() {
         // some code goes here
         int count = 0;
-        for (int i = 0; i < numSlots; i++) {
+        for (int i = 0; i < getNumTuples(); i++) {
             if (((header[i / 8] >> (i % 8)) & 1) == 0) {
                 count++;
             }
@@ -339,7 +339,7 @@ public class HeapPage implements Page {
         // some code goes here
         int index = i / 8;
         int offset = i % 8;
-        return ((header[index] >> offset) & 1) == 1;
+        return ((this.header[index] >> offset) & 1) == 1;
     }
 
     /**
