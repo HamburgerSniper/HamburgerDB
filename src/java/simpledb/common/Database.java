@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * Provides a set of methods that can be used to access these variables from
  * anywhere.
- * 
+ *
  * @Threadsafe
  */
 public class Database {
@@ -38,17 +38,26 @@ public class Database {
         // startControllerThread();
     }
 
-    /** Return the log file of the static Database instance */
+    /**
+     * Return the log file of the static Database instance
+     * 返回静态数据库实例的日志文件
+     */
     public static LogFile getLogFile() {
         return _instance.get()._logfile;
     }
 
-    /** Return the buffer pool of the static Database instance */
+    /**
+     * Return the buffer pool of the static Database instance
+     * 返回静态数据库实例的缓冲池
+     */
     public static BufferPool getBufferPool() {
         return _instance.get()._bufferpool;
     }
 
-    /** Return the catalog of the static Database instance */
+    /**
+     * Return the catalog of the static Database instance
+     * 返回静态数据库实例的目录
+     */
     public static Catalog getCatalog() {
         return _instance.get()._catalog;
     }
@@ -56,9 +65,10 @@ public class Database {
     /**
      * Method used for testing -- create a new instance of the buffer pool and
      * return it
+     * 用于测试的方法——创建缓冲池的新实例并返回它
      */
     public static BufferPool resetBufferPool(int pages) {
-        java.lang.reflect.Field bufferPoolF=null;
+        java.lang.reflect.Field bufferPoolF = null;
         try {
             bufferPoolF = Database.class.getDeclaredField("_bufferpool");
             bufferPoolF.setAccessible(true);
@@ -71,6 +81,7 @@ public class Database {
     }
 
     // reset the database, used for unit tests only.
+    // 重置数据库，仅用于单元测试。
     public static void reset() {
         _instance.set(new Database());
     }

@@ -94,7 +94,7 @@ public class Tuple implements Serializable {
      */
     public Field getField(int i) {
         // some code goes here
-        if (i < 0|| i > this.fieldList.size()){
+        if (i < 0 || i > this.fieldList.size()) {
             return null;
         }
         return this.fieldList.get(i);
@@ -102,7 +102,7 @@ public class Tuple implements Serializable {
 
     /**
      * 输出内容，因此并不需要返回RecordId路径，因此不需要RecordId字段
-     *
+     * <p>
      * Returns the contents of this Tuple as a string. Note that to pass the
      * system tests, the format needs to be as follows:
      * <p>
@@ -136,8 +136,8 @@ public class Tuple implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Tuple) {
-            if(((Tuple) o).tupleDesc.equals(tupleDesc) && ((Tuple) o).recordId.equals(recordId) && ((Tuple) o).fieldList.equals(fieldList)){
+        if (o instanceof Tuple) {
+            if (((Tuple) o).tupleDesc.equals(tupleDesc) && ((Tuple) o).recordId.equals(recordId) && ((Tuple) o).fieldList.equals(fieldList)) {
                 return true;
             }
         }

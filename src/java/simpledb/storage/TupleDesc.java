@@ -10,12 +10,14 @@ import java.util.*;
  */
 public class TupleDesc implements Serializable {
 
+    /**
+     * 描述表头的List,每个元素称为一个TDItem，具有Type和Name两种属性
+     */
     private List<TDItem> tupleDescList = new ArrayList<>();
 
     /**
      * A help class to facilitate organizing the information of each field
-     * <br>
-     * <b>帮助类，便于组织每个字段的信息</b>
+     * 帮助类，便于组织每个字段的信息
      */
     public static class TDItem implements Serializable {
 
@@ -108,6 +110,7 @@ public class TupleDesc implements Serializable {
 
     /**
      * 获取TDItem的数量
+     *
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
@@ -212,7 +215,6 @@ public class TupleDesc implements Serializable {
      * @param o the Object to be compared for equality with this TupleDesc.
      * @return true if the object is equal to this TupleDesc.
      */
-
     public boolean equals(Object o) {
         // some code goes here
         if (o instanceof TupleDesc) {
@@ -234,7 +236,6 @@ public class TupleDesc implements Serializable {
         // that equal objects have equals hashCode() results
         throw new UnsupportedOperationException("unimplemented");
     }
-
 
     /**
      * Returns a String describing this descriptor. It should be of the form
