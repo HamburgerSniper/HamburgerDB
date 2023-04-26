@@ -2,7 +2,6 @@ package simpledb.storage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,24 +17,12 @@ public class Tuple implements Serializable {
      * 验证版本一致性的serialVersionUID
      */
     private static final long serialVersionUID = 1L;
-    /**
-     * 元组头部
-     */
     private TupleDesc tupleDesc;
-    /**
-     * 储存的数据
-     */
     private List<Field> fieldList;
-    /**
-     * 路径
-     */
     private RecordId recordId;
 
     /**
      * Create a new tuple with the specified schema (type).
-     * 使用指定的架构（类型）创建一个新的元组。
-     * <p>
-     * td: 元组的模式，必须是一个有效的 TupleDesc 实例 至少有一个字段
      *
      * @param td the schema of this tuple. It must be a valid TupleDesc
      *           instance with at least one field.
@@ -101,8 +88,6 @@ public class Tuple implements Serializable {
     }
 
     /**
-     * 输出内容，因此并不需要返回RecordId路径，因此不需要RecordId字段
-     * <p>
      * Returns the contents of this Tuple as a string. Note that to pass the
      * system tests, the format needs to be as follows:
      * <p>
@@ -112,10 +97,7 @@ public class Tuple implements Serializable {
      */
     @Override
     public String toString() {
-        return "Tuple{" +
-                "tupleDesc=" + tupleDesc +
-                ", fieldList=" + fieldList +
-                '}';
+        return fieldList + "";
     }
 
     /**

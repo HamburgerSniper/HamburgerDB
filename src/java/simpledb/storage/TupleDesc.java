@@ -3,21 +3,20 @@ package simpledb.storage;
 import simpledb.common.Type;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * TupleDesc describes the schema of a tuple.
  */
 public class TupleDesc implements Serializable {
 
-    /**
-     * 描述表头的List,每个元素称为一个TDItem，具有Type和Name两种属性
-     */
     private List<TDItem> tupleDescList = new ArrayList<>();
 
     /**
      * A help class to facilitate organizing the information of each field
-     * 帮助类，便于组织每个字段的信息
      */
     public static class TDItem implements Serializable {
 
@@ -60,8 +59,6 @@ public class TupleDesc implements Serializable {
     /**
      * @return An iterator which iterates over all the field TDItems
      * that are included in this TupleDesc
-     * <br>
-     * <b>一个迭代器，用于迭代此TupleDesc中包含的所有字段TDItems</b>
      */
     public Iterator<TDItem> iterator() {
         // some code goes here
@@ -76,10 +73,8 @@ public class TupleDesc implements Serializable {
      *
      * @param typeAr  array specifying the number of and types of fields in this
      *                TupleDesc. It must contain at least one entry.
-     *                <b>指定此TupleDesc中字段的数量和类型，至少包含一个条目</b>
      * @param fieldAr array specifying the names of the fields. Note that names may
      *                be null.
-     *                <b>指定字段名称的数组。请注意，名称可能为null</b>
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
         // some code goes here
@@ -109,8 +104,6 @@ public class TupleDesc implements Serializable {
     }
 
     /**
-     * 获取TDItem的数量
-     *
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
@@ -174,8 +167,6 @@ public class TupleDesc implements Serializable {
     }
 
     /**
-     * 获取所有元数据的字节大小
-     *
      * @return The size (in bytes) of tuples corresponding to this TupleDesc.
      * Note that tuples from a given TupleDesc are of a fixed size.
      */
@@ -217,14 +208,19 @@ public class TupleDesc implements Serializable {
      */
     public boolean equals(Object o) {
         // some code goes here
+        // 比较class:
         if (o instanceof TupleDesc) {
             List<TDItem> tupleDescList = ((TupleDesc) o).tupleDescList;
+            // 比较大小是否相同
             if (tupleDescList.size() == this.tupleDescList.size()) {
+                // 遍历每个字段
                 for (int i = 0; i < this.tupleDescList.size(); i++) {
+                    // 如果类型不相等
                     if (!this.tupleDescList.get(i).getFieldType().equals(tupleDescList.get(i).getFieldType())) {
                         return false;
                     }
                 }
+                // 全部相等
                 return true;
             }
         }
