@@ -23,16 +23,8 @@ public class Filter extends Operator {
      */
     private OpIterator child;
 
-    /**
-     * td是我们返回结果元组的描述信息，在Filter中与传入的数据源是相同的，
-     * 而在其它运算符中是根据返回结果的情况去创建TupleDesc的
-     */
-    private TupleDesc tupleDesc;
-
-    private Iterator<Tuple> it;
-
-    private List<Tuple> childTuple = new ArrayList<>();
-
+    private Iterator<Tuple> tupleIterator;
+    private final List<Tuple> childTuple = new ArrayList<>();
 
     /**
      * Constructor accepts a predicate to apply and a child operator to read
@@ -54,7 +46,7 @@ public class Filter extends Operator {
 
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return child.getTupleDesc();
+        return this.child.getTupleDesc();
     }
 
     public void open() throws DbException, NoSuchElementException,
@@ -67,27 +59,27 @@ public class Filter extends Operator {
                 childTuple.add(next);
             }
         }
-        it = childTuple.iterator();
+        tupleIterator = childTuple.iterator();
         super.open();
     }
 
     public void close() {
         // some code goes here
         child.close();
-        it = null;
+        tupleIterator = null;
         super.close();
     }
 
     public void rewind() throws DbException, TransactionAbortedException {
         // some code goes here
-        it = childTuple.iterator();
+        tupleIterator = childTuple.iterator();
     }
 
     /**
      * AbstractDbIterator.readNext implementation. Iterates over tuples from the
      * child operator, applying the predicate to them and returning those that
      * pass the predicate (i.e. for which the Predicate.filter() returns true.)
-     *
+     * <p>
      * 从child那里读取一个个tuple并进行判断，直到找到一个合适的可以返回的元组才能返回，如果child的遍历已经结束了，那么就返回一个null
      *
      * @return The next tuple that passes the filter, or null if there are no
@@ -97,8 +89,8 @@ public class Filter extends Operator {
     protected Tuple fetchNext() throws NoSuchElementException,
             TransactionAbortedException, DbException {
         // some code goes here
-        if(it!=null && it.hasNext()){
-            return it.next();
+        if (tupleIterator != null && tupleIterator.hasNext()) {
+            return tupleIterator.next();
         }
         return null;
     }

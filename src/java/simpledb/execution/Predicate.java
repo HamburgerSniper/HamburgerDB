@@ -83,7 +83,7 @@ public class Predicate implements Serializable {
      */
     public int getField() {
         // some code goes here
-        return field;
+        return this.field;
     }
 
     /**
@@ -91,7 +91,7 @@ public class Predicate implements Serializable {
      */
     public Op getOp() {
         // some code goes here
-        return op;
+        return this.op;
     }
 
     /**
@@ -99,7 +99,7 @@ public class Predicate implements Serializable {
      */
     public Field getOperand() {
         // some code goes here
-        return operand;
+        return this.operand;
     }
 
     /**
@@ -107,17 +107,19 @@ public class Predicate implements Serializable {
      * operand field specified in the constructor using the operator specific in
      * the constructor. The comparison can be made through Field's compare
      * method.
-     *
+     * <p>
      * Predicate的作用就是将传入的Tuple进行判断，而Predicate的field属性表明使用元组的第几个字段去
      * 与操作数operand进行op运算操作，比较的结果实际是调用Field类的compare方法，compare方法会根据
      * 传入的运算符和操作数进行比较
+     *
      * @param t The tuple to compare against
      * @return true if the comparison is true, false otherwise.
      */
     public boolean filter(Tuple t) {
         // some code goes here
-        Field field = t.getField(this.field);
-        return field.compare(this.op,this.operand);
+        Field field1 = t.getField(this.field);
+        Field field2 = this.operand;
+        return field1.compare(this.op, field2);
     }
 
     /**

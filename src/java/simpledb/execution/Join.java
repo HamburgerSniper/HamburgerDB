@@ -1,6 +1,7 @@
 package simpledb.execution;
 
 import simpledb.storage.Field;
+import simpledb.storage.TupleIterator;
 import simpledb.transaction.TransactionAbortedException;
 import simpledb.common.DbException;
 import simpledb.storage.Tuple;
@@ -10,7 +11,7 @@ import java.util.*;
 
 /**
  * The Join operator implements the relational join operation.
- *
+ * <p>
  * Join操作是对两个数据表进行操作，将分别来自于两个表的，满足一定条件的元组a和b合成一个新的元组c，
  * 并且c的所有属性是a和b汇总得到的，比如a元组的是(a1,a2,a3)，b元组是(b1,b2)且ab满足join的判断条件，
  * 那么新生成的c就是(a1,a2,a3,b1,b2)
@@ -23,7 +24,8 @@ public class Join extends Operator {
     private OpIterator child1;
     private OpIterator child2;
     private TupleDesc tupleDesc;
-    private Iterator<Tuple> it;
+    private Iterator<Tuple> tupleIterator;
+
     private final List<Tuple> childTuple = new ArrayList<>();
 
     /**
@@ -39,7 +41,7 @@ public class Join extends Operator {
         this.joinPredicate = p;
         this.child1 = child1;
         this.child2 = child2;
-        this.tupleDesc = TupleDesc.merge(child1.getTupleDesc(), child2.getTupleDesc());
+        this.tupleDesc = TupleDesc.merge(child1.getTupleDesc(),child2.getTupleDesc());
     }
 
     public JoinPredicate getJoinPredicate() {
@@ -54,7 +56,7 @@ public class Join extends Operator {
     public String getJoinField1Name() {
         // some code goes here
         int field1 = this.joinPredicate.getField1();
-        return child1.getTupleDesc().getFieldName(field1);
+        return child1.getTupleDesc().getFieldName(this.joinPredicate.getField1());
     }
 
     /**
@@ -72,6 +74,7 @@ public class Join extends Operator {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
+        this.tupleDesc = TupleDesc.merge(child1.getTupleDesc(), child2.getTupleDesc());
         return this.tupleDesc;
     }
 
@@ -80,7 +83,6 @@ public class Join extends Operator {
         // some code goes here
         child1.open();
         child2.open();
-
         while (child1.hasNext()) {
             Tuple next1 = child1.next();
             while (child2.hasNext()) {
@@ -101,7 +103,7 @@ public class Join extends Operator {
             }
             child2.rewind();
         }
-        it = childTuple.iterator();
+        tupleIterator = childTuple.iterator();
         super.open();
     }
 
@@ -109,13 +111,13 @@ public class Join extends Operator {
         // some code goes here
         child1.close();
         child2.close();
-        it = null;
+        tupleIterator = null;
         super.close();
     }
 
     public void rewind() throws DbException, TransactionAbortedException {
         // some code goes here
-        it = childTuple.iterator();
+        tupleIterator = childTuple.iterator();
     }
 
     /**
@@ -138,8 +140,8 @@ public class Join extends Operator {
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        if (it != null && it.hasNext()) {
-            return it.next();
+        if (tupleIterator != null && tupleIterator.hasNext()) {
+            return tupleIterator.next();
         }
         return null;
     }
