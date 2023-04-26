@@ -24,10 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe
  */
 public class Catalog {
-    private final ConcurrentHashMap<Integer, Table> tableMap;
+    /* <name,Table>*/
+    private ConcurrentHashMap<String, Table> stringTableMap;
 
-    // 用来存储表名和对应id的映射
-//    private final ConcurrentHashMap<String, Integer> tableNameToIdMap;
+    /* <tableId,Table>*/
+    private ConcurrentHashMap<Integer, Table> integerTableMap;
 
     /**
      * Table：为Catalog存储的一个个表建立的辅助类，Table类的构造函数需要三个参数，
@@ -85,8 +86,8 @@ public class Catalog {
      */
     public Catalog() {
         // some code goes here
-        this.tableMap = new ConcurrentHashMap<>();
-//        this.tableNameToIdMap = new ConcurrentHashMap<>();
+        this.integerTableMap = new ConcurrentHashMap<>();
+        this.stringTableMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -101,8 +102,12 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
-        this.tableMap.put(file.getId(), new Table(file, name, pkeyField));
-//        this.tableNameToIdMap.put(name,file.getId());
+        if (stringTableMap.containsKey(name)) {
+            integerTableMap.remove(stringTableMap.get(name).getFile().getId());
+        }
+        Table table = new Table(file, name, pkeyField);
+        stringTableMap.put(name, table);
+        integerTableMap.put(file.getId(), table);
     }
 
     public void addTable(DbFile file, String name) {
@@ -128,14 +133,10 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        Integer res = tableMap.searchValues(1, value -> {
-            if (value.getName().equals(name)) {
-                return value.file.getId();
+        if (name != null) {
+            if(stringTableMap.containsKey(name)){
+                return stringTableMap.get(name).getFile().getId();
             }
-            return null;
-        });
-        if (res != null) {
-            return res;
         }
         throw new NoSuchElementException("not found id for table " + name);
     }
@@ -149,7 +150,7 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableId) throws NoSuchElementException {
         // some code goes here
-        Table table = tableMap.getOrDefault(tableId, null);
+        Table table = integerTableMap.getOrDefault(tableId, null);
         if (table != null) {
             return table.getFile().getTupleDesc();
         }
@@ -165,7 +166,7 @@ public class Catalog {
      */
     public DbFile getDatabaseFile(int tableId) throws NoSuchElementException {
         // some code goes here
-        Table table = this.tableMap.getOrDefault(tableId, null);
+        Table table = this.integerTableMap.getOrDefault(tableId, null);
         if (table != null) {
             return table.getFile();
         }
@@ -174,7 +175,7 @@ public class Catalog {
 
     public String getPrimaryKey(int tableId) {
         // some code goes here
-        Table table = this.tableMap.getOrDefault(tableId, null);
+        Table table = this.integerTableMap.getOrDefault(tableId, null);
         if (table != null) {
             return table.getpKeyName();
         }
@@ -184,15 +185,15 @@ public class Catalog {
     public Iterator<Integer> tableIdIterator() {
         // some code goes here
         List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < this.tableMap.size(); i++) {
-            result.add(this.tableMap.get(i).getFile().getId());
+        for (int i = 0; i < this.integerTableMap.size(); i++) {
+            result.add(this.integerTableMap.get(i).getFile().getId());
         }
         return result.iterator();
     }
 
     public String getTableName(int id) {
         // some code goes here
-        Table table = this.tableMap.getOrDefault(id, null);
+        Table table = this.integerTableMap.getOrDefault(id, null);
         if (table != null) {
             return table.getName();
         }
@@ -205,7 +206,7 @@ public class Catalog {
      */
     public void clear() {
         // some code goes here
-        this.tableMap.clear();
+        this.integerTableMap.clear();
     }
 
     /**
