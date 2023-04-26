@@ -5,9 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-import org.junit.Assert;
+
 import junit.framework.JUnit4TestAdapter;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
