@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Catalog {
     private final ConcurrentHashMap<Integer, Table> tableMap;
 
+    // 用来存储表名和对应id的映射
+//    private final ConcurrentHashMap<String, Integer> tableNameToIdMap;
+
     /**
      * Table：为Catalog存储的一个个表建立的辅助类，Table类的构造函数需要三个参数，
      * 第一个参数是DbFile类型，是table的内容；
@@ -45,7 +48,7 @@ public class Catalog {
         }
 
         public DbFile getFile() {
-            return file;
+            return this.file;
         }
 
         public void setFile(DbFile file) {
@@ -53,7 +56,7 @@ public class Catalog {
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public void setName(String name) {
@@ -61,7 +64,7 @@ public class Catalog {
         }
 
         public String getpKeyName() {
-            return pKeyName;
+            return this.pKeyName;
         }
 
         @Override
@@ -83,6 +86,7 @@ public class Catalog {
     public Catalog() {
         // some code goes here
         this.tableMap = new ConcurrentHashMap<>();
+//        this.tableNameToIdMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -98,6 +102,7 @@ public class Catalog {
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
         this.tableMap.put(file.getId(), new Table(file, name, pkeyField));
+//        this.tableNameToIdMap.put(name,file.getId());
     }
 
     public void addTable(DbFile file, String name) {
@@ -123,13 +128,13 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        Integer res = tableMap.searchValues(1, value -> {
-            if (value.getName().equals(name)) {
-                return value.getFile().getId();
+        Integer res = tableMap.searchValues(1, value ->{
+            if(value.getName().equals(name)){
+                return value.file.getId();
             }
             return null;
         });
-        if (res != null) {
+        if(res != null){
             return res;
         }
         throw new NoSuchElementException("not found id for table " + name);
