@@ -128,13 +128,13 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        Integer res = tableMap.searchValues(1, value ->{
-            if(value.getName().equals(name)){
+        Integer res = tableMap.searchValues(1, value -> {
+            if (value.getName().equals(name)) {
                 return value.file.getId();
             }
             return null;
         });
-        if(res != null){
+        if (res != null) {
             return res;
         }
         throw new NoSuchElementException("not found id for table " + name);

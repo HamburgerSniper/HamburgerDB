@@ -1,18 +1,12 @@
 package simpledb.storage;
 
 import simpledb.common.Database;
-import simpledb.common.Permissions;
 import simpledb.common.DbException;
-import simpledb.common.DeadlockException;
+import simpledb.common.Permissions;
 import simpledb.transaction.TransactionAbortedException;
 import simpledb.transaction.TransactionId;
 
-import java.io.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,11 +37,12 @@ public class BufferPool {
     // 默认buffer中保存的页数
     public static final int DEFAULT_PAGES = 50;
 
+    // 页面的最大数量
     private int numPages;
 
-//    private Map<Integer,Page> buffer;
-
-    private LRUCache<PageId, Page> buffer;
+    // 储存的页面
+    private final ConcurrentHashMap<Integer, Page> pageStore;
+//    private LRUCache<PageId, Page> pageStore;
 
     /**
      * BufferPool 负责管理SimpleDB保存在内存中页的信息，因为内存不可能无限大
@@ -64,8 +59,7 @@ public class BufferPool {
     public BufferPool(int numPages) {
         // some code goes here
         this.numPages = numPages;
-//        this.buffer = new HashMap<>(numPages);
-        this.buffer = new LRUCache<>(numPages);
+        pageStore = new ConcurrentHashMap<>();
     }
 
     public static int getPageSize() {
@@ -100,18 +94,21 @@ public class BufferPool {
     public Page getPage(TransactionId tid, PageId pid, Permissions perm)
             throws TransactionAbortedException, DbException {
         // some code goes here
-        if (this.buffer.get(pid) == null) {
-            // find the right page in DBFiles
-            // 找表名
+        // 如果缓存池中没有
+        if (!pageStore.containsKey(pid.hashCode())) {
+            // 获取
             DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
             Page page = dbFile.readPage(pid);
-            if (buffer.getSize() > numPages) {
-                evictPage();
+            // 是否超过大小
+            if (pageStore.size() >= numPages) {
+                // 淘汰 (后面的 Exercise 书写)
+                throw new DbException("页面已满");
             }
-            buffer.put(pid, page);
-            return page;
+            // 放入缓存
+            pageStore.put(pid.hashCode(), page);
         }
-        return this.buffer.get(pid);
+        // 从 缓存池 中获取
+        return pageStore.get(pid.hashCode());
     }
 
     /**
@@ -125,7 +122,7 @@ public class BufferPool {
      */
     public void unsafeReleasePage(TransactionId tid, PageId pid) {
         // some code goes here
-        // not necessary for lab1|lab2
+        // not necessary for Exercise1|Exercise2
     }
 
     /**
@@ -135,7 +132,7 @@ public class BufferPool {
      */
     public void transactionComplete(TransactionId tid) {
         // some code goes here
-        // not necessary for lab1|lab2
+        // not necessary for Exercise1|Exercise2
     }
 
     /**
@@ -143,7 +140,7 @@ public class BufferPool {
      */
     public boolean holdsLock(TransactionId tid, PageId p) {
         // some code goes here
-        // not necessary for lab1|lab2
+        // not necessary for Exercise1|Exercise2
         return false;
     }
 
@@ -156,13 +153,13 @@ public class BufferPool {
      */
     public void transactionComplete(TransactionId tid, boolean commit) {
         // some code goes here
-        // not necessary for lab1|lab2
+        // not necessary for Exercise1|Exercise2
     }
 
     /**
      * Add a tuple to the specified table on behalf of transaction tid.  Will
      * acquire a write lock on the page the tuple is added to and any other
-     * pages that are updated (Lock acquisition is not needed for lab2).
+     * pages that are updated (Lock acquisition is not needed for Exercise2).
      * May block if the lock(s) cannot be acquired.
      * <p>
      * Marks any pages that were dirtied by the operation as dirty by calling
@@ -177,14 +174,7 @@ public class BufferPool {
     public void insertTuple(TransactionId tid, int tableId, Tuple t)
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
-        // not necessary for lab1
-        DbFile dbFile = Database.getCatalog().getDatabaseFile(tableId);
-        //注意，insertTuple函数并不会
-        List<Page> pages = dbFile.insertTuple(tid, t);
-        for (Page page : pages) {
-            page.markDirty(true, tid);
-            buffer.put(page.getId(), page);
-        }
+        // not necessary for Exercise1
     }
 
     /**
@@ -203,12 +193,7 @@ public class BufferPool {
     public void deleteTuple(TransactionId tid, Tuple t)
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
-        // not necessary for lab1
-        DbFile dbFile = Database.getCatalog().getDatabaseFile(t.getRecordId().getPageId().getTableId());
-        List<Page> pages = dbFile.deleteTuple(tid, t);
-        for (Page page : pages) {
-            page.markDirty(true, tid);
-        }
+        // not necessary for Exercise1
     }
 
     /**
@@ -218,25 +203,8 @@ public class BufferPool {
      */
     public synchronized void flushAllPages() throws IOException {
         // some code goes here
-        // not necessary for lab1
-        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
-        while (head != tail) {
-            Page page = head.value;
-            if (page != null && page.isDirty() != null) {
-                DbFile dbFile = Database.getCatalog().getDatabaseFile(page.getId().getTableId());
-                //记录日志
-                try {
-                    Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
-                    Database.getLogFile().force();
+        // not necessary for Exercise1
 
-                    dbFile.writePage(page);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            head = head.next;
-        }
     }
 
     /**
@@ -250,17 +218,7 @@ public class BufferPool {
      */
     public synchronized void discardPage(PageId pid) {
         // some code goes here
-        // not necessary for lab1
-        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
-        while (head != tail) {
-            PageId key = head.key;
-            if (key != null && key.equals(pid)) {
-                buffer.remove(head);
-                return;
-            }
-            head = head.next;
-        }
+        // not necessary for Exercise1
     }
 
     /**
@@ -270,20 +228,7 @@ public class BufferPool {
      */
     private synchronized void flushPage(PageId pid) throws IOException {
         // some code goes here
-        // not necessary for lab1
-        Page page = buffer.get(pid);
-
-        if (page.isDirty() != null) {
-            DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
-            try {
-                Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
-                Database.getLogFile().force();
-                page.markDirty(false, null);
-                dbFile.writePage(page);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // not necessary for Exercise1
     }
 
     /**
@@ -291,39 +236,15 @@ public class BufferPool {
      */
     public synchronized void flushPages(TransactionId tid) throws IOException {
         // some code goes here
-        // not necessary for lab1|lab2
+        // not necessary for Exercise1|Exercise2
     }
 
     /**
      * Discards a page from the buffer pool.
      * Flushes the page to disk to ensure dirty pages are updated on disk.
-     * 从缓冲池中丢弃一个页面。将页刷新到磁盘，以确保脏页在磁盘上得到更新。
      */
     private synchronized void evictPage() throws DbException {
         // some code goes here
-        // not necessary for lab1
-        Page page = buffer.getTail().prev.value;
-        if (page != null && page.isDirty() != null) {
-            findNotDirty();
-        } else {
-            // 不是脏页没改过，不需要写磁盘
-            buffer.discard();
-        }
+        // not necessary for Exercise1
     }
-
-    private void findNotDirty() throws DbException {
-        LRUCache<PageId, Page>.DLinkedNode head = buffer.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = buffer.getTail();
-        tail = tail.prev;
-        while (head != tail) {
-            Page value = tail.value;
-            if (value != null && value.isDirty() == null) {
-                buffer.remove(tail);
-                return;
-            }
-            tail = tail.prev;
-        }
-        throw new DbException("no dirty page");
-    }
-
 }
