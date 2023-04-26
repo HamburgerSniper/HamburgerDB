@@ -41,7 +41,7 @@ public class Join extends Operator {
         this.joinPredicate = p;
         this.child1 = child1;
         this.child2 = child2;
-        this.tupleDesc = TupleDesc.merge(child1.getTupleDesc(),child2.getTupleDesc());
+        this.tupleDesc = TupleDesc.merge(child1.getTupleDesc(), child2.getTupleDesc());
     }
 
     public JoinPredicate getJoinPredicate() {
