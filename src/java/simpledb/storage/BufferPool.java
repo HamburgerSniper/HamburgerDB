@@ -252,9 +252,9 @@ public class BufferPool {
         // not necessary for Exercise1
         LRUCache<PageId, Page>.DLinkedNode head = pageStore.getHead();
         LRUCache<PageId, Page>.DLinkedNode tail = pageStore.getTail();
-        while(head!=tail){
+        while (head != tail) {
             PageId key = head.key;
-            if(key!=null && key.equals(pid)){
+            if (key != null && key.equals(pid)) {
                 pageStore.remove(head);
                 return;
             }
@@ -272,14 +272,14 @@ public class BufferPool {
         // not necessary for Exercise1
         Page page = pageStore.get(pid);
 
-        if(page.isDirty()!=null){
+        if (page.isDirty() != null) {
             DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
-            try{
-                Database.getLogFile().logWrite(page.isDirty(),page.getBeforeImage(),page);
+            try {
+                Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
                 Database.getLogFile().force();
-                page.markDirty(false,null);
+                page.markDirty(false, null);
                 dbFile.writePage(page);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -291,6 +291,25 @@ public class BufferPool {
     public synchronized void flushPages(TransactionId tid) throws IOException {
         // some code goes here
         // not necessary for Exercise1|Exercise2
+        LRUCache<PageId, Page>.DLinkedNode head = pageStore.getHead();
+        LRUCache<PageId, Page>.DLinkedNode tail = pageStore.getTail();
+        while (head != tail) {
+            Page page = head.value;
+            if (page != null && page.isDirty() != null && page.isDirty().equals(tid)) {
+                DbFile dbFile = Database.getCatalog().getDatabaseFile(page.getId().getTableId());
+                //记录日志
+                try {
+                    Database.getLogFile().logWrite(page.isDirty(), page.getBeforeImage(), page);
+                    Database.getLogFile().force();
+                    page.markDirty(false, null);
+
+                    dbFile.writePage(page);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            head = head.next;
+        }
     }
 
     /**
@@ -301,9 +320,9 @@ public class BufferPool {
         // some code goes here
         // not necessary for Exercise1
         Page page = pageStore.getTail().prev.value;
-        if(page!=null && page.isDirty()!=null){
+        if (page != null && page.isDirty() != null) {
             findNotDirty();
-        }else{
+        } else {
             //不是脏页没改过，不需要写磁盘
             pageStore.discard();
         }
