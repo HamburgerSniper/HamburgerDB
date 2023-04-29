@@ -101,9 +101,9 @@ public class BufferPool {
             DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
             Page page = dbFile.readPage(pid);
             // 是否超过大小
-            if (pageStore.getSize() >= numPages) {
+            if (pageStore.getSize() > numPages) {
                 // 淘汰 (后面的 Exercise 书写)
-                throw new DbException("页面已满");
+                evictPage();
             }
             // 放入缓存
             pageStore.put(pid, page);
