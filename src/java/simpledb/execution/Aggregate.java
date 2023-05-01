@@ -28,7 +28,7 @@ public class Aggregate extends Operator {
      */
     private int afield;
     /**
-     * gfield 是指根据tuple的第几个字段进行聚合操作，当无需分组时groupField值为1
+     * gfield 是指根据tuple的第几个字段进行分组操作，当无需分组时groupField值为1
      * 相当于上面SQL语句中的country
      */
     private int gfield;
@@ -36,14 +36,13 @@ public class Aggregate extends Operator {
      * op是进行聚合运算的操作符，相当于上述SQL语句的SUM
      */
     private Aggregator.Op aop;
-    /**
-     * 具体的聚合器，用于过滤
-     */
+    // 进行聚合操作的类
     private final Aggregator aggregator;
-    /**
-     * 最终结果的迭代器
-     */
+    // 进行聚合操作的类
+    // 聚合结果的迭代器
     private OpIterator opIterator;
+    // 聚合结果的属性行
+    private TupleDesc tupleDesc;
 
     /**
      * Constructor.
@@ -64,9 +63,11 @@ public class Aggregate extends Operator {
         this.afield = afield;
         this.gfield = gfield;
         this.aop = aop;
+        // 判断是否分组
         Type fieldType = child.getTupleDesc().getFieldType(afield);
         /* 根据有没有group by字段，以及聚合字段是什么类型分别进行创建 */
         if (gfield != -1) {
+            // 创建聚合器
             if (fieldType.equals(Type.INT_TYPE)) {
                 // 这里要改一下
                 aggregator = new IntegerAggregator(gfield, child.getTupleDesc().getFieldType(gfield), afield, aop);
@@ -162,12 +163,15 @@ public class Aggregate extends Operator {
     public void open() throws NoSuchElementException, DbException,
             TransactionAbortedException {
         // some code goes here
+        // 聚合所有的tuple
         child.open();
         while (child.hasNext()) {
             Tuple next = child.next();
             aggregator.mergeTupleIntoGroup(next);
         }
+        // 通过迭代器进行查询
         opIterator.open();
+        // 使父类状态保持一致
         super.open();
     }
 
@@ -224,7 +228,9 @@ public class Aggregate extends Operator {
     @Override
     public void setChildren(OpIterator[] children) {
         // some code goes here
-        this.child = children[0];
+        if (children.length > 0) {
+            this.child = children[0];
+        }
     }
 
 }
