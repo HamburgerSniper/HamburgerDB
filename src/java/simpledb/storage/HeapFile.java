@@ -6,8 +6,14 @@ import simpledb.common.Permissions;
 import simpledb.transaction.TransactionAbortedException;
 import simpledb.transaction.TransactionId;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * HeapFile is an implementation of a DbFile that stores a collection of tuples
@@ -76,9 +82,7 @@ public class HeapFile implements DbFile {
         return tupleDesc;
     }
 
-    /*
-        以下有些方法并不会直接调用，而是通过BufferPool调用
-     */
+    // 以下有些方法并不会直接调用，而是通过BufferPool调用
     // see DbFile.java for javadocs
 
     /**
@@ -204,8 +208,10 @@ public class HeapFile implements DbFile {
         // some code goes here
         // not necessary for lab1
         ArrayList<Page> res = new ArrayList<>();
+        // 查询现有的页
         HeapPageId heapPageId = (HeapPageId) t.getRecordId().getPageId();
         HeapPage heapPage = (HeapPage) Database.getBufferPool().getPage(tid, heapPageId, Permissions.READ_WRITE);
+        // 查看当前页是否有空闲空间
         if (heapPage == null) {
             throw new DbException("null");
         }
@@ -227,9 +233,7 @@ public class HeapFile implements DbFile {
         TransactionId tid;
         Permissions permissions;
         BufferPool bufferPool = Database.getBufferPool();
-        /**
-         * iterator 每一页的迭代器
-         */
+        // iterator 是每一页的迭代器
         Iterator<Tuple> iterator;
         int num = 0;
 

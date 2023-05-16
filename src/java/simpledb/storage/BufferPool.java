@@ -3,11 +3,13 @@ package simpledb.storage;
 import simpledb.common.Database;
 import simpledb.common.DbException;
 import simpledb.common.Permissions;
+import simpledb.transaction.LockManager;
 import simpledb.transaction.TransactionAbortedException;
 import simpledb.transaction.TransactionId;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,6 +47,9 @@ public class BufferPool {
 //    private final ConcurrentHashMap<Integer, Page> pageStore;
     private LRUCache<PageId, Page> pageStore;
 
+    // 锁
+    private LockManager lockManager;
+
     /**
      * BufferPool 负责管理SimpleDB保存在内存中页的信息，因为内存不可能无限大
      * 所以我们需要在一个指定大小的Buffer中保存一定数量的数据页，并在Buffer容量达到上限的时候进行页的置换，
@@ -61,6 +66,7 @@ public class BufferPool {
         // some code goes here
         this.numPages = numPages;
         this.pageStore = new LRUCache<>(numPages);
+        this.lockManager = new LockManager();
     }
 
     public static int getPageSize() {
@@ -95,6 +101,18 @@ public class BufferPool {
     public Page getPage(TransactionId tid, PageId pid, Permissions perm)
             throws TransactionAbortedException, DbException {
         // some code goes here
+        // 先获取锁
+        boolean lockAcquired = false;
+        long start = System.currentTimeMillis();
+        int timeout = new Random().nextInt(2000);
+        while (!lockAcquired) {
+            long now = System.currentTimeMillis();
+            if (now - start > timeout) {
+                throw new TransactionAbortedException();
+            }
+            lockAcquired = lockManager.acquireLock(tid, pid, perm);
+        }
+
         // 如果缓存池中没有
         if (this.pageStore.get(pid) == null) {
             // 获取
@@ -125,6 +143,7 @@ public class BufferPool {
     public void unsafeReleasePage(TransactionId tid, PageId pid) {
         // some code goes here
         // not necessary for Exercise1|Exercise2
+        lockManager.releaseLock(tid, pid);
     }
 
     /**
@@ -135,6 +154,7 @@ public class BufferPool {
     public void transactionComplete(TransactionId tid) {
         // some code goes here
         // not necessary for Exercise1|Exercise2
+        transactionComplete(tid, true);
     }
 
     /**
@@ -143,7 +163,7 @@ public class BufferPool {
     public boolean holdsLock(TransactionId tid, PageId p) {
         // some code goes here
         // not necessary for Exercise1|Exercise2
-        return false;
+        return lockManager.holdsLock(tid, p);
     }
 
     /**
@@ -156,7 +176,41 @@ public class BufferPool {
     public void transactionComplete(TransactionId tid, boolean commit) {
         // some code goes here
         // not necessary for Exercise1|Exercise2
+        if (commit) {
+            try {
+                flushPages(tid);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            rollback(tid);
+        }
+        lockManager.releaseAllLock(tid);
     }
+
+    private synchronized void rollback(TransactionId tid) {
+        LRUCache<PageId, Page>.DLinkedNode head = pageStore.getHead();
+        LRUCache<PageId, Page>.DLinkedNode tail = pageStore.getTail();
+        while (head != tail) {
+            Page page = head.value;
+            LRUCache<PageId, Page>.DLinkedNode next = head.next;
+            if (page != null && page.isDirty() != null && page.isDirty().equals(tid)) {
+                pageStore.remove(head);
+                Page page1 = null;
+                try {
+                    page1 = Database.getBufferPool().getPage(tid, page.getId(), Permissions.READ_ONLY);
+                    page1.markDirty(false, null);
+                } catch (TransactionAbortedException e) {
+                    e.printStackTrace();
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            head = next;
+        }
+    }
+
 
     /**
      * Add a tuple to the specified table on behalf of transaction tid.  Will
@@ -340,6 +394,7 @@ public class BufferPool {
             }
             tail = tail.prev;
         }
+        // 没有非脏页，抛出异常
         throw new DbException("no dirty page");
     }
 }
