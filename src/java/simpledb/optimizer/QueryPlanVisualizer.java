@@ -1,12 +1,12 @@
 package simpledb.optimizer;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Iterator;
-
 import simpledb.execution.*;
 import simpledb.storage.TupleDesc;
 import simpledb.storage.TupleDesc.TDItem;
+
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Iterator;
 
 public class QueryPlanVisualizer {
 

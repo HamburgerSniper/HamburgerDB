@@ -1,8 +1,9 @@
 package simpledb.execution;
-import simpledb.transaction.TransactionAbortedException;
-import simpledb.common.DbException;
 
-import java.util.*;
+import simpledb.common.DbException;
+import simpledb.transaction.TransactionAbortedException;
+
+import java.util.NoSuchElementException;
 
 /** IndexDBIterator is the interface that index access methods
     implement in SimpleDb.

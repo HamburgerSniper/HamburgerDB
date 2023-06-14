@@ -1,8 +1,9 @@
 package simpledb.storage;
+
 import simpledb.common.DbException;
 import simpledb.transaction.TransactionAbortedException;
 
-import java.util.*;
+import java.util.NoSuchElementException;
 
 /**
  * DbFileIterator is the iterator interface that all SimpleDB Dbfile should

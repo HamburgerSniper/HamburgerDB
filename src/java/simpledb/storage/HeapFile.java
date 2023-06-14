@@ -30,6 +30,7 @@ public class HeapFile implements DbFile {
     private File file;
     private TupleDesc tupleDesc;
 
+
     /**
      * Constructs a heap file backed by the specified file.
      *
@@ -38,13 +39,11 @@ public class HeapFile implements DbFile {
      */
     public HeapFile(File f, TupleDesc td) {
         // some code goes here
-        this.file = f;
-        this.tupleDesc = td;
+        file = f;
+        tupleDesc = td;
     }
 
     /**
-     * 返回磁盘中支持此HeapFile 的File类型文件。
-     * <p>
      * Returns the File backing this HeapFile on disk.
      *
      * @return the File backing this HeapFile on disk.
@@ -55,8 +54,6 @@ public class HeapFile implements DbFile {
     }
 
     /**
-     * 返回唯一标识此HeapFile的ID
-     * <p>
      * Returns an ID uniquely identifying this HeapFile. Implementation note:
      * you will need to generate this tableid somewhere to ensure that each
      * HeapFile has a "unique id," and that you always return the same value for
@@ -71,8 +68,6 @@ public class HeapFile implements DbFile {
     }
 
     /**
-     * 返回存储在这个DbFile中的table 的TupleDesc。
-     * <p>
      * Returns the TupleDesc of the table stored in this DbFile.
      *
      * @return TupleDesc of this DbFile.
@@ -82,45 +77,33 @@ public class HeapFile implements DbFile {
         return tupleDesc;
     }
 
-    // 以下有些方法并不会直接调用，而是通过BufferPool调用
-    // see DbFile.java for javadocs
-
-    /**
-     * 根据给定页号来读取 File 中对应的 Page
-     * 通过Java提供的文件随机访问API实现
-     * <p>
-     * 读取pid对应的Page。先找到File内要读取的Page Number(startpositon)，读取整个Page返回。
-     * <p>
-     * 随机访问就是可以从文件的任何一个字节开始向下读取，而顺序访问就是必须从文件头开始读
-     *
-     * @param pid
-     * @return
+    /*
+    以下有些方法并不会直接调用，而是通过BufferPool调用
      */
+    // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
         // some code goes here
-        byte pageData[] = new byte[BufferPool.getPageSize()];
-        int startPosition = pid.getPageNumber() * BufferPool.getPageSize();
+        HeapPage heapPage = null;
+        int pageSize = BufferPool.getPageSize();
+        byte[] buf = new byte[pageSize];
+
         try {
             RandomAccessFile randomAccessFile = new RandomAccessFile(this.file, "r");
-            randomAccessFile.seek(startPosition);
-            randomAccessFile.read(pageData, 0, pageData.length);
-            return new HeapPage((HeapPageId) pid, pageData);
+            randomAccessFile.seek((long) pid.getPageNumber() * pageSize);
+            if (randomAccessFile.read(buf) == -1) {
+                return null;
+            }
+            heapPage = new HeapPage((HeapPageId) pid, buf);
+            randomAccessFile.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return null;
+        return heapPage;
     }
 
     // see DbFile.java for javadocs
-
-    /**
-     * 写pid对应的Page。先找到File内要写的Page Number，写入整个Page。
-     *
-     * @param page The page to write.  page.getId().pageno() specifies the offset into the file where the page should be written.
-     * @throws IOException
-     */
     public void writePage(Page page) throws IOException {
         // some code goes here
         // not necessary for lab1
@@ -135,28 +118,14 @@ public class HeapFile implements DbFile {
     }
 
     /**
-     * 返回这个HeapFile中包含的page数量。
-     * <p>
      * Returns the number of pages in this HeapFile.
      */
     public int numPages() {
         // some code goes here
-        return (int) (file.length() / BufferPool.getPageSize());
+        return (int) file.length() / BufferPool.getPageSize();
     }
 
     // see DbFile.java for javadocs
-
-    /**
-     * 找到一个未满的page，如果不存在空闲的slot，创建新的一页存储tuple，之后添加，返回添加过的Page。
-     *
-     * @param tid The transaction performing the update
-     * @param t   The tuple to add.  This tuple should be updated to reflect that
-     *            it is now stored in this file.
-     * @return
-     * @throws DbException
-     * @throws IOException
-     * @throws TransactionAbortedException
-     */
     public List<Page> insertTuple(TransactionId tid, Tuple t)
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
@@ -188,30 +157,16 @@ public class HeapFile implements DbFile {
         writePage(heapPage);
         res.add(heapPage);
         return res;
-
     }
 
     // see DbFile.java for javadocs
-
-    /**
-     * 找到对应的page，删除tuple，标识此page为dirty。
-     *
-     * @param tid The transaction performing the update
-     * @param t   The tuple to delete.  This tuple should be updated to reflect that
-     *            it is no longer stored on any page.
-     * @return
-     * @throws DbException
-     * @throws TransactionAbortedException
-     */
     public ArrayList<Page> deleteTuple(TransactionId tid, Tuple t) throws DbException,
             TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
         ArrayList<Page> res = new ArrayList<>();
-        // 查询现有的页
         HeapPageId heapPageId = (HeapPageId) t.getRecordId().getPageId();
         HeapPage heapPage = (HeapPage) Database.getBufferPool().getPage(tid, heapPageId, Permissions.READ_WRITE);
-        // 查看当前页是否有空闲空间
         if (heapPage == null) {
             throw new DbException("null");
         }
@@ -233,8 +188,7 @@ public class HeapFile implements DbFile {
         TransactionId tid;
         Permissions permissions;
         BufferPool bufferPool = Database.getBufferPool();
-        // iterator 是每一页的迭代器
-        Iterator<Tuple> iterator;
+        Iterator<Tuple> iterator;  //这个iterator是每一页的迭代器
         int num = 0;
 
         public HeapFileIterator(TransactionId tid, Permissions permissions) {

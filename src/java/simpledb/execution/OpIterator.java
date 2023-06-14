@@ -1,11 +1,12 @@
 package simpledb.execution;
-import simpledb.transaction.TransactionAbortedException;
+
 import simpledb.common.DbException;
 import simpledb.storage.Tuple;
 import simpledb.storage.TupleDesc;
+import simpledb.transaction.TransactionAbortedException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.NoSuchElementException;
 
 /**
  * OpIterator is the iterator interface that all SimpleDB operators should

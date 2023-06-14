@@ -2,7 +2,7 @@ package simpledb.transaction;
 
 import simpledb.common.Database;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Transaction encapsulates information about the state of

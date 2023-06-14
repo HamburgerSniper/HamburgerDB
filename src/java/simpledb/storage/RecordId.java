@@ -9,26 +9,24 @@ import java.io.Serializable;
 public class RecordId implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * pageId : 页号
-     */
+
+    //这里不同的存储结构，会有不同的page实现
     private PageId pageId;
-    /**
-     * TupleNum : 页面偏移量
-     */
-    private Integer tupleNumber;
+    private Integer tupleno;
 
     /**
      * Creates a new RecordId referring to the specified PageId and tuple
      * number.
-     *
-     * @param pid     the pageId of the page on which the tuple resides
-     * @param tupleNo the tuple number within the page.
+     * 
+     * @param pid
+     *            the pageid of the page on which the tuple resides
+     * @param tupleno
+     *            the tuple number within the page.
      */
-    public RecordId(PageId pid, int tupleNo) {
+    public RecordId(PageId pid, int tupleno) {
         // some code goes here
         this.pageId = pid;
-        this.tupleNumber = tupleNo;
+        this.tupleno =tupleno;
     }
 
     /**
@@ -36,7 +34,7 @@ public class RecordId implements Serializable {
      */
     public int getTupleNumber() {
         // some code goes here
-        return this.tupleNumber;
+        return this.tupleno;
     }
 
     /**
@@ -50,17 +48,15 @@ public class RecordId implements Serializable {
     /**
      * Two RecordId objects are considered equal if they represent the same
      * tuple.
-     *
+     * 
      * @return True if this and o represent the same tuple
      */
     @Override
     public boolean equals(Object o) {
         // some code goes here
-        if (o == this) {
-            return true;
-        } else if (o instanceof RecordId) {
+        if(o instanceof RecordId){
             RecordId temp = (RecordId) o;
-            if (temp.tupleNumber.equals(this.tupleNumber) && temp.pageId.equals(this.pageId)) {
+            if(temp.tupleno.equals(this.tupleno) && temp.pageId.equals(this.pageId)){
                 return true;
             }
         }
@@ -70,14 +66,22 @@ public class RecordId implements Serializable {
     /**
      * You should implement the hashCode() so that two equal RecordId instances
      * (with respect to equals()) have the same hashCode().
-     *
+     * 
      * @return An int that is the same for equal RecordId objects.
      */
     @Override
     public int hashCode() {
         // some code goes here
-        return tupleNumber.hashCode() + (pageId + "").hashCode();
+        return (tupleno+"").hashCode() + (pageId+"").hashCode();
 
+    }
+
+    @Override
+    public String toString() {
+        return "RecordId{" +
+                "pageId=" + pageId +
+                ", tupleno=" + tupleno +
+                '}';
     }
 
 }

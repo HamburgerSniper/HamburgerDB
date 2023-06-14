@@ -1,14 +1,15 @@
 package simpledb.optimizer;
+
+import simpledb.ParsingException;
 import simpledb.common.Catalog;
 import simpledb.common.Database;
-import simpledb.ParsingException;
 import simpledb.common.Type;
 import simpledb.execution.*;
 import simpledb.storage.*;
 import simpledb.transaction.TransactionId;
 
-import java.util.*;
 import java.io.File;
+import java.util.*;
 
 /**
  * LogicalPlan represents a logical query plan that has been through
@@ -466,7 +467,7 @@ public class LogicalPlan {
                                         groupByField == null?Aggregator.NO_GROUPING:td.fieldNameToIndex(groupByField),
                                 getAggOp(aggOp));
             } catch (NoSuchElementException | IllegalArgumentException e) {
-                throw new simpledb.ParsingException(e);
+                throw new ParsingException(e);
             }
             node = aggNode;
         }

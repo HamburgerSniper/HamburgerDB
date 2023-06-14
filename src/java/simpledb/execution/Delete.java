@@ -29,9 +29,11 @@ public class Delete extends Operator {
     /**
      * Constructor specifying the transaction that this delete belongs to as
      * well as the child to read from.
-     *
-     * @param t     The transaction this delete runs in
-     * @param child The child operator from which to read tuples for deletion
+     * 
+     * @param t
+     *            The transaction this delete runs in
+     * @param child
+     *            The child operator from which to read tuples for deletion
      */
     public Delete(TransactionId t, OpIterator child) {
         // some code goes here
@@ -48,17 +50,17 @@ public class Delete extends Operator {
         // some code goes here
         child.open();
         int count = 0;
-        while (child.hasNext()) {
+        while(child.hasNext()){
             Tuple next = child.next();
             count++;
             try {
-                Database.getBufferPool().deleteTuple(t, next);
+                Database.getBufferPool().deleteTuple(t,next);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         Tuple tuple = new Tuple(getTupleDesc());
-        tuple.setField(0, new IntField(count));
+        tuple.setField(0,new IntField(count));
         tupleList.add(tuple);
         iterator = tupleList.iterator();
         super.open();
@@ -81,14 +83,14 @@ public class Delete extends Operator {
      * Deletes tuples as they are read from the child operator. Deletes are
      * processed via the buffer pool (which can be accessed via the
      * Database.getBufferPool() method.
-     *
+     * 
      * @return A 1-field tuple containing the number of deleted records.
      * @see Database#getBufferPool
      * @see BufferPool#deleteTuple
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        if (iterator != null && iterator.hasNext()) {
+        if(iterator!=null && iterator.hasNext()){
             return iterator.next();
         }
         return null;

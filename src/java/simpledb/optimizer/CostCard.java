@@ -1,6 +1,4 @@
 package simpledb.optimizer;
-import simpledb.optimizer.JoinOptimizer;
-import simpledb.optimizer.LogicalJoinNode;
 
 import java.util.List;
 

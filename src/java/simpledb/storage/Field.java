@@ -1,9 +1,11 @@
 package simpledb.storage;
 
-import simpledb.execution.Predicate;
 import simpledb.common.Type;
+import simpledb.execution.Predicate;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Interface for values of fields in tuples in SimpleDB.

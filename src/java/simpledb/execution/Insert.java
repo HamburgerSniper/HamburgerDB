@@ -3,7 +3,10 @@ package simpledb.execution;
 import simpledb.common.Database;
 import simpledb.common.DbException;
 import simpledb.common.Type;
-import simpledb.storage.*;
+import simpledb.storage.BufferPool;
+import simpledb.storage.IntField;
+import simpledb.storage.Tuple;
+import simpledb.storage.TupleDesc;
 import simpledb.transaction.TransactionAbortedException;
 import simpledb.transaction.TransactionId;
 
@@ -28,20 +31,24 @@ public class Insert extends Operator {
     /**
      * Constructor.
      *
-     * @param t       The transaction running the insert.
-     * @param child   The child operator from which to read tuples to be inserted.
-     * @param tableId The table in which to insert tuples.
-     * @throws DbException if TupleDesc of child differs from table into which we are to
-     *                     insert.
+     * @param t
+     *            The transaction running the insert.
+     * @param child
+     *            The child operator from which to read tuples to be inserted.
+     * @param tableId
+     *            The table in which to insert tuples.
+     * @throws DbException
+     *             if TupleDesc of child differs from table into which we are to
+     *             insert.
      */
     public Insert(TransactionId t, OpIterator child, int tableId)
             throws DbException {
         // some code goes here
         this.t = t;
-        this.child = child;
+        this.child =child;
         this.tableId = tableId;
-        if (!child.getTupleDesc().equals(Database.getCatalog().getTupleDesc(tableId))) {
-            throw new DbException("insert tupleDesc not equal.");
+        if(!child.getTupleDesc().equals(Database.getCatalog().getTupleDesc(tableId))){
+            throw  new DbException("insert tupleDesc not equal.");
         }
     }
 
@@ -54,11 +61,11 @@ public class Insert extends Operator {
         // some code goes here
         child.open();
         int count = 0;
-        while (child.hasNext()) {
+        while(child.hasNext()){
             Tuple next = child.next();
             count++;
             try {
-                Database.getBufferPool().insertTuple(this.t, this.tableId, next);
+                Database.getBufferPool().insertTuple(this.t,this.tableId,next);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -92,13 +99,13 @@ public class Insert extends Operator {
      * duplicate before inserting it.
      *
      * @return A 1-field tuple containing the number of inserted records, or
-     * null if called more than once.
+     *         null if called more than once.
      * @see Database#getBufferPool
      * @see BufferPool#insertTuple
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        if (iterator != null && iterator.hasNext()) {
+        if(iterator != null && iterator.hasNext()){
             return iterator.next();
         }
         return null;

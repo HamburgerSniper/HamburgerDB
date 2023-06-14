@@ -2,7 +2,7 @@ package simpledb.storage;
 
 import simpledb.execution.OpIterator;
 
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * Implements a OpIterator by wrapping an Iterable<Tuple>.

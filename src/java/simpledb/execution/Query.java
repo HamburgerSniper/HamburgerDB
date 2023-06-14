@@ -1,14 +1,14 @@
 package simpledb.execution;
 
-import simpledb.optimizer.LogicalPlan;
-import simpledb.transaction.TransactionAbortedException;
-import simpledb.transaction.TransactionId;
 import simpledb.common.DbException;
+import simpledb.optimizer.LogicalPlan;
 import simpledb.storage.Tuple;
 import simpledb.storage.TupleDesc;
+import simpledb.transaction.TransactionAbortedException;
+import simpledb.transaction.TransactionId;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.NoSuchElementException;
 
 /**
  * Query is a wrapper class to manage the execution of queries. It takes a query
