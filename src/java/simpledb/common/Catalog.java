@@ -134,7 +134,7 @@ public class Catalog {
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
         if (name != null) {
-            if(stringTableMap.containsKey(name)){
+            if (stringTableMap.containsKey(name)) {
                 return stringTableMap.get(name).getFile().getId();
             }
         }
