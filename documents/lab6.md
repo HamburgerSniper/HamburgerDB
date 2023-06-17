@@ -102,8 +102,8 @@ Here's what to do:
   ```
   % ant runsystest -Dtest=LogTest
     ...
-    [junit] Running simpledb.systemtest.LogTest
-    [junit] Testsuite: simpledb.systemtest.LogTest
+    [junit] Running HamburgerDB.systemtest.LogTest
+    [junit] Testsuite: HamburgerDB.systemtest.LogTest
     [junit] Tests run: 10, Failures: 0, Errors: 7, Time elapsed: 0.42 sec
     [junit] Tests run: 10, Failures: 0, Errors: 7, Time elapsed: 0.42 sec
     [junit] 
@@ -251,7 +251,7 @@ When you do, please try to include:
 
 * A description of the bug.
 
-* A <tt>.java</tt> file we can drop in the `src/simpledb/test`
+* A <tt>.java</tt> file we can drop in the `src/HamburgerDB/test`
   directory, compile, and run.
 
 * A <tt>.txt</tt> file with the data that reproduces the bug.  We should be

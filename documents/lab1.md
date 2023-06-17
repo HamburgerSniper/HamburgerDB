@@ -85,8 +85,8 @@ You should see output similar to:
  build output...
 
 test:
-    [junit] Running simpledb.CatalogTest
-    [junit] Testsuite: simpledb.CatalogTest
+    [junit] Running HamburgerDB.CatalogTest
+    [junit] Testsuite: HamburgerDB.CatalogTest
     [junit] Tests run: 2, Failures: 0, Errors: 2, Time elapsed: 0.037 sec
     [junit] Tests run: 2, Failures: 0, Errors: 2, Time elapsed: 0.037 sec
 
@@ -96,15 +96,15 @@ test:
 The output above indicates that two errors occurred during compilation; this is because the code we have given you
 doesn't yet work. As you complete parts of the lab, you will work towards passing additional unit tests.
 
-If you wish to write new unit tests as you code, they should be added to the <tt>test/simpledb</tt> directory.
+If you wish to write new unit tests as you code, they should be added to the <tt>test/HamburgerDB</tt> directory.
 
 <p>For more details about how to use Ant, see the [manual](http://ant.apache.org/manual/). The [Running Ant](http://ant.apache.org/manual/running.html) section provides details about using the `ant` command. However, the quick reference table below should be sufficient for working on the labs.
 
 Command | Description
 --- | ---
-ant|Build the default target (for simpledb, this is dist).
+ant|Build the default target (for HamburgerDB, this is dist).
 ant -projecthelp|List all the targets in `build.xml` with descriptions.
-ant dist|Compile the code in src and package it in `dist/simpledb.jar`.
+ant dist|Compile the code in src and package it in `dist/HamburgerDB.jar`.
 ant test|Compile and run all the unit tests.
 ant runtest -Dtest=testname|Run the unit test named `testname`.
 ant systemtest|Compile and run all the system tests.
@@ -119,7 +119,7 @@ arguments and renaming it to, say, runtest_build.xml.
 ### 1.1. Running end-to-end tests
 
 We have also provided a set of end-to-end tests that will eventually be used for grading. These tests are structured as
-JUnit tests that live in the <tt>test/simpledb/systemtest</tt> directory. To run all the system tests, use
+JUnit tests that live in the <tt>test/HamburgerDB/systemtest</tt> directory. To run all the system tests, use
 the `systemtest` build target:
 
 ```
@@ -135,11 +135,11 @@ $ ant systemtest
     [junit] java.lang.AssertionError: expected to find the following tuples:
     [junit]     19128
     [junit] 
-    [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:122)
-    [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:83)
-    [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:75)
-    [junit]     at simpledb.systemtest.ScanTest.validateScan(ScanTest.java:30)
-    [junit]     at simpledb.systemtest.ScanTest.testSmall(ScanTest.java:40)
+    [junit]     at HamburgerDB.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:122)
+    [junit]     at HamburgerDB.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:83)
+    [junit]     at HamburgerDB.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:75)
+    [junit]     at HamburgerDB.systemtest.ScanTest.validateScan(ScanTest.java:30)
+    [junit]     at HamburgerDB.systemtest.ScanTest.testSmall(ScanTest.java:40)
 
  ... more error messages ...
 ```
@@ -151,7 +151,7 @@ $ ant systemtest
 
  ... build output ...
 
-    [junit] Testsuite: simpledb.systemtest.ScanTest
+    [junit] Testsuite: HamburgerDB.systemtest.ScanTest
     [junit] Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 7.278 sec
     [junit] Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 7.278 sec
     [junit] 
@@ -170,7 +170,7 @@ You can create any <tt>.txt</tt> file and convert it to a <tt>.dat</tt> file in 
 command:
 
 ```
-$ java -jar dist/simpledb.jar convert file.txt N
+$ java -jar dist/HamburgerDB.jar convert file.txt N
 ```
 
 where <tt>file.txt</tt> is the name of the file and <tt>N</tt> is the number of columns in the file. Notice that <tt>
@@ -188,7 +188,7 @@ int1,int2,...,intN
 To view the contents of a table, use the `print` command:
 
 ```
-$ java -jar dist/simpledb.jar print file.dat N
+$ java -jar dist/HamburgerDB.jar print file.dat N
 ```
 
 where <tt>file.dat</tt> is the name of a table created with the <tt>convert</tt> command, and <tt>N</tt> is the number
@@ -236,7 +236,7 @@ you don't switch, you may see spurious test failures in some of the performance 
 
 To run a unit test or system test (both are JUnit tests, and can be initialized the same way), go to the Package
 Explorer tab on the left side of your screen. Under the "simple-db-hw" project, open the "test" directory. Unit tests
-are found in the "simpledb" package, and system tests are found in the "simpledb.systemtests" package. To run one of
+are found in the "HamburgerDB" package, and system tests are found in the "HamburgerDB.systemtests" package. To run one of
 these tests, select the test (they are all called *Test.java - don't select TestUtil.java or SystemTestUtil.java), right
 click on it, select "Run As," and select "JUnit Test."  This will bring up a JUnit tab, which will tell you the status
 of the individual tests within the JUnit test suite, and will show you exceptions and other errors that will help you
@@ -375,8 +375,8 @@ file as you will need to access these objects.
 **Implement the skeleton methods in:**
 ***
 
-* src/java/simpledb/storage/TupleDesc.java
-* src/java/simpledb/storage/Tuple.java
+* src/java/HamburgerDB/storage/TupleDesc.java
+* src/java/HamburgerDB/storage/Tuple.java
 
 ***
 
@@ -400,7 +400,7 @@ using `Database.getBufferPool()`).
 **Implement the skeleton methods in:**
 ***
 
-* src/java/simpledb/common/Catalog.java
+* src/java/HamburgerDB/common/Catalog.java
 
 *** 
 
@@ -419,7 +419,7 @@ BufferPool instance for the entire SimpleDB process.
 
 ***
 
-* src/java/simpledb/storage/BufferPool.java
+* src/java/HamburgerDB/storage/BufferPool.java
 
 ***
 
@@ -510,16 +510,16 @@ are [big-endian](http://en.wikipedia.org/wiki/Endianness).
 **Implement the skeleton methods in:**
 ***
 
-* src/java/simpledb/storage/HeapPageId.java
-* src/java/simpledb/storage/RecordId.java
-* src/java/simpledb/storage/HeapPage.java
+* src/java/HamburgerDB/storage/HeapPageId.java
+* src/java/HamburgerDB/storage/RecordId.java
+* src/java/HamburgerDB/storage/HeapPage.java
 
 ***
 
 
 Although you will not use them directly in Lab 1, we ask you to implement <tt>getNumEmptySlots()</tt> and <tt>
 isSlotUsed()</tt> in HeapPage. These require pushing around bits in the page header. You may find it helpful to look at
-the other methods that have been provided in HeapPage or in <tt>src/simpledb/HeapFileEncoder.java</tt> to understand the
+the other methods that have been provided in HeapPage or in <tt>src/HamburgerDB/HeapFileEncoder.java</tt> to understand the
 layout of pages.
 
 You will also need to implement an Iterator over the tuples in the page, which may involve an auxiliary class or data
@@ -540,7 +540,7 @@ disk.
 
 ***
 
-* src/java/simpledb/storage/HeapFile.java
+* src/java/HamburgerDB/storage/HeapFile.java
 
 *** 
 
@@ -593,7 +593,7 @@ For this lab, you will only need to implement one SimpleDB operator.
 
 ***
 
-* src/java/simpledb/execution/SeqScan.java
+* src/java/HamburgerDB/execution/SeqScan.java
 
 ***
 This operator sequentially scans all of the tuples from the pages of the table specified by the `tableid` in the
@@ -621,14 +621,14 @@ Suppose you have a data file, "some_data_file.txt", with the following contents:
 <p>
 You can convert this into a binary file that SimpleDB can query as follows:
 <p>
-```java -jar dist/simpledb.jar convert some_data_file.txt 3```
+```java -jar dist/HamburgerDB.jar convert some_data_file.txt 3```
 <p>
 Here, the argument "3" tells conver that the input has 3 columns.
 <p>
 The following code implements a simple selection query over this file. This code is equivalent to the SQL statement `SELECT * FROM some_data_file`.
 
 ```
-package simpledb;
+package HamburgerDB;
 import java.io.*;
 
 public class test {
@@ -680,13 +680,13 @@ repeatedly calls `hasNext` and `next` on the `SeqScan` operator. As tuples are o
 printed out on the command line.
 
 We **strongly recommend** you try this out as a fun end-to-end test that will help you get experience writing your own
-test programs for simpledb. You should create the file "test.java" in the src/java/simpledb directory with the code above, 
+test programs for HamburgerDB. You should create the file "test.java" in the src/java/HamburgerDB directory with the code above, 
 and you should add some "import" statement above the code, 
 and place the `some_data_file.dat` file in the top level directory. Then run:
 
 ```
 ant
-java -classpath dist/simpledb.jar simpledb.test
+java -classpath dist/HamburgerDB.jar HamburgerDB.test
 ```
 
 Note that `ant` compiles `test.java` and generates a new jarfile that contains it.
@@ -710,7 +710,7 @@ groups are not allowed. Please indicate clearly who you worked with, if anyone, 
 
 <!--
 To submit your code, please create a <tt>6.830-lab1.tar.gz</tt> tarball (such
-that, untarred, it creates a <tt>6.830-lab1/src/simpledb</tt> directory with
+that, untarred, it creates a <tt>6.830-lab1/src/HamburgerDB</tt> directory with
 your code) and submit it on the [6.830 Stellar Site](https://stellar.mit.edu/S/course/6/sp13/6.830/index.html). You can use the `ant handin` target to generate the tarball.
 -->
 
@@ -733,7 +733,7 @@ Please submit (friendly!) bug reports to [6.830-staff@mit.edu](mailto:6.830-staf
 include:
 
 * A description of the bug.
-* A .java file we can drop in the test/simpledb directory, compile, and run.
+* A .java file we can drop in the test/HamburgerDB directory, compile, and run.
 * A .txt file with the data that reproduces the bug. We should be able to convert it to a .dat file using
   HeapFileEncoder.
 

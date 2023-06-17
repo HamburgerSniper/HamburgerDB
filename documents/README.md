@@ -189,7 +189,7 @@ on the instructions in the last section.
 
    Check it periodically as well as Piazza's announcements for updates on when the new labs are released.
 
-2. Once a lab is released, pull in the changes from your simpledb directory:
+2. Once a lab is released, pull in the changes from your HamburgerDB directory:
 
    ```bash
     $ git pull upstream master

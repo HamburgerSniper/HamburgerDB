@@ -356,7 +356,7 @@ effectively comes for free if the B+ tree is implemented correctly. Thus, at
 this point you should also be able to pass `BTreeNextKeyLockingTest`.
 
 Additionally, you should be able to pass the tests in
-`test/simpledb/BTreeDeadlockTest.java` if you have implemented locking correctly
+`test/HamburgerDB/BTreeDeadlockTest.java` if you have implemented locking correctly
 inside of your B+ tree code.
 
 If everything is implemented correctly, you should also be able to pass the
@@ -432,7 +432,7 @@ When you do, please try to include:
 
 * A description of the bug.
 * A <tt>.java</tt> file we can drop in the
-  `test/simpledb` directory, compile, and run.
+  `test/HamburgerDB` directory, compile, and run.
 * A <tt>.txt</tt> file with the data that reproduces the bug.  We should be
   able to convert it to a <tt>.dat</tt> file using `HeapFileEncoder`.
 

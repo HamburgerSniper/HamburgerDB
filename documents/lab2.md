@@ -62,7 +62,7 @@ manually. For eclipse, under the package explorer, right click the project name
 on the left-hand-side, and click on the **Libraries** tab on the right-hand-side.  Push
 the **Add JARs...** button, select **zql.jar** and **jline-0.9.94.jar**, and push **OK**,
 followed by **OK**.  Your code should now compile. For IntelliJ, go to **Project Structure**
-under **File**, and under **Modules**, select the <tt>simpledb</tt> project, and navigate to
+under **File**, and under **Modules**, select the <tt>HamburgerDB</tt> project, and navigate to
 the **Dependencies** tab. On the bottom of the pane, click on the <tt>+</tt> icon to add
 the jars as compile-time dependencies. 
 
@@ -142,10 +142,10 @@ Implement the skeleton methods in:
 
 ***  
 
-* src/java/simpledb/execution/Predicate.java
-* src/java/simpledb/execution/JoinPredicate.java
-* src/java/simpledb/execution/Filter.java
-* src/java/simpledb/execution/Join.java
+* src/java/HamburgerDB/execution/Predicate.java
+* src/java/HamburgerDB/execution/JoinPredicate.java
+* src/java/HamburgerDB/execution/Filter.java
+* src/java/HamburgerDB/execution/Join.java
 
 ***  
 
@@ -176,9 +176,9 @@ Implement the skeleton methods in:
 
 ***  
 
-* src/java/simpledb/execution/IntegerAggregator.java
-* src/java/simpledb/execution/StringAggregator.java
-* src/java/simpledb/execution/Aggregate.java
+* src/java/HamburgerDB/execution/IntegerAggregator.java
+* src/java/HamburgerDB/execution/StringAggregator.java
+* src/java/HamburgerDB/execution/Aggregate.java
 
 ***  
 
@@ -205,8 +205,8 @@ Implement the remaining skeleton methods in:
 
 ***  
 
-* src/java/simpledb/storage/HeapPage.java
-* src/java/simpledb/storage/HeapFile.java<br>
+* src/java/HamburgerDB/storage/HeapPage.java
+* src/java/HamburgerDB/storage/HeapFile.java<br>
   (Note that you do not necessarily need to implement writePage at this point).
 
 ***
@@ -223,7 +223,7 @@ Note that it is important that the <tt>HeapFile.insertTuple()</tt>
 and <tt>HeapFile.deleteTuple()</tt> methods access pages using the <tt>BufferPool.getPage()</tt> method; otherwise, your
 implementation of transactions in the next lab will not work properly.
 
-Implement the following skeleton methods in <tt>src/simpledb/BufferPool.java</tt>:
+Implement the following skeleton methods in <tt>src/HamburgerDB/BufferPool.java</tt>:
 
 ***  
 
@@ -261,8 +261,8 @@ Implement the skeleton methods in:
 
 ***  
 
-* src/java/simpledb/execution/Insert.java
-* src/java/simpledb/execution/Delete.java
+* src/java/HamburgerDB/execution/Insert.java
+* src/java/HamburgerDB/execution/Delete.java
 
 ***  
 
@@ -298,7 +298,7 @@ Fill in the `flushPage()` method and additional helper methods to implement page
 
 ***  
 
-* src/java/simpledb/storage/BufferPool.java
+* src/java/HamburgerDB/storage/BufferPool.java
 
 ***
 
@@ -339,7 +339,7 @@ For more extensive examples of query operations, you may find it helpful to brow
 and aggregates.
 
 ```java
-package simpledb;
+package HamburgerDB;
 
 import java.io.*;
 
@@ -431,7 +431,7 @@ You can convert this into a SimpleDB table using the
 `convert` command (make sure to type <tt>ant</tt> first!):
 
 ```
-java -jar dist/simpledb.jar convert data.txt 2 "int,int"
+java -jar dist/HamburgerDB.jar convert data.txt 2 "int,int"
 ```
 
 This creates a file `data.dat`. In addition to the table's raw data, the two additional parameters specify that each
@@ -450,10 +450,10 @@ and `f2`.
 
 Finally, invoke the parser. You must run java from the command line (ant doesn't work properly with interactive
 targets.)
-From the `simpledb/` directory, type:
+From the `HamburgerDB/` directory, type:
 
 ```
-java -jar dist/simpledb.jar parser catalog.txt
+java -jar dist/HamburgerDB.jar parser catalog.txt
 ```
 
 You should see output like:
@@ -556,7 +556,7 @@ include:
 * A description of the bug.
 
 * A <tt>.java</tt> file we can drop in the
-  `test/simpledb` directory, compile, and run.
+  `test/HamburgerDB` directory, compile, and run.
 
 * A <tt>.txt</tt> file with the data that reproduces the bug. We should be able to convert it to a <tt>.dat</tt> file
   using `HeapFileEncoder`.

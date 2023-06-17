@@ -324,7 +324,7 @@ the WAIT-DIE and WOUND-WAIT schemes.
 
 **Exercise 5.**
 
-Implement deadlock detection or prevention in `src/simpledb/BufferPool.java`. You have many
+Implement deadlock detection or prevention in `src/HamburgerDB/BufferPool.java`. You have many
 design decisions for your deadlock handling system, but it is not necessary to
 do something highly sophisticated. We expect you to do better than a simple timeout on each
 transaction. A good starting point will be to implement cycle-detection in a wait-for graph
@@ -343,7 +343,7 @@ fails due to a deadlock -- you can assume that higher level code
 will take care of this.
 
 We have provided some (not-so-unit) tests in
-`test/simpledb/DeadlockTest.java`. They are actually a
+`test/HamburgerDB/DeadlockTest.java`. They are actually a
 bit involved, so they may take more than a few seconds to run (depending
 on your policy). If they seem to hang indefinitely, then you probably
 have an unresolved deadlock. These tests construct simple deadlock
@@ -438,7 +438,7 @@ When you do, please try to include:
 
 * A description of the bug.
 * A <tt>.java</tt> file we can drop in the
-  `test/simpledb` directory, compile, and run.
+  `test/HamburgerDB` directory, compile, and run.
 * A <tt>.txt</tt> file with the data that reproduces the bug.  We should be
   able to convert it to a <tt>.dat</tt> file using `HeapFileEncoder`.
 

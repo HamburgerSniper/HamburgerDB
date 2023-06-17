@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="simpledb" default="dist" basedir=".">
+<project name="HamburgerDB" default="dist" basedir=".">
     <property name="src" location="src"/>
     <property name="testd" location="test"/>
 
@@ -79,7 +79,7 @@
     project">
         <echo file=".project" append="false">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;projectDescription&gt;
-    &lt;name&gt;simpledb&lt;/name&gt;
+    &lt;name&gt;HamburgerDB&lt;/name&gt;
     &lt;comment&gt;&lt;/comment&gt;
     &lt;projects&gt;
     &lt;/projects&gt;
@@ -187,7 +187,7 @@
         <javadoc destdir="${doc}" access="private" failonerror="true" source="${sourceversion}" additionalparam="-Xdoclint:none">
             <classpath refid="classpath.base" />
             <fileset dir="src/java" defaultexcludes="yes">
-                <include name="simpledb/**/*.java"/>
+                <include name="HamburgerDB/**/*.java"/>
             </fileset>
         </javadoc>
     </target>
@@ -196,7 +196,7 @@
         <mkdir dir="${dist}"/>
         <jar jarfile="${jarfile}" basedir="${build.src}">
             <manifest>
-                <attribute name="Main-Class" value="simpledb.SimpleDb"/>
+                <attribute name="Main-Class" value="HamburgerDB.SimpleDb"/>
                 <attribute name="Class-Path" value="../lib/zql.jar ../lib/jline-0.9.94.jar ../lib/jzlib-1.0.7.jar ../lib/mina-core-2.0.4.jar ../lib/mina-filter-compression-2.0.4.jar ../lib/slf4j-api-1.6.1.jar ../lib/slf4j-log4j12-1.6.1.jar ../lib/log4j-1.2.17.jar "/>
             </manifest>
             <!-- Merge library jars into final jar file -->
@@ -223,7 +223,7 @@
                 <fileset dir="${build.test}">
                     <include name="**/*Test.class"/>
                     <exclude name="**/*$*.class"/>
-                    <exclude name="simpledb/systemtest/*.class"/>
+                    <exclude name="HamburgerDB/systemtest/*.class"/>
                 </fileset>
             </batchtest>
         </RunJunit>
@@ -233,7 +233,7 @@
         <RunJunit>
             <batchtest>
                 <fileset dir="${build.test}">
-                    <include name="simpledb/systemtest/*Test.class"/>
+                    <include name="HamburgerDB/systemtest/*Test.class"/>
                 </fileset>
             </batchtest>
         </RunJunit>
@@ -245,13 +245,13 @@
         <fail unless="test" message="You must run this target with -Dtest=TestName"/>
 
         <!-- Check if the class exists -->
-        <available property="test.exists" classname="simpledb.${test}">
+        <available property="test.exists" classname="HamburgerDB.${test}">
                 <classpath refid="classpath.test" />
         </available>
         <fail unless="test.exists" message="Test ${test} could not be found"/>
 
         <RunJunit>
-            <test name="simpledb.${test}"/>
+            <test name="HamburgerDB.${test}"/>
         </RunJunit>
     </target>
 
@@ -261,13 +261,13 @@
         <fail unless="test" message="You must run this target with -Dtest=TestName"/>
 
         <!-- Check if the class exists -->
-        <available property="test.exists" classname="simpledb.systemtest.${test}">
+        <available property="test.exists" classname="HamburgerDB.systemtest.${test}">
                 <classpath refid="classpath.test" />
         </available>
         <fail unless="test.exists" message="Test ${test} could not be found"/>
 
         <RunJunit>
-            <test name="simpledb.systemtest.${test}"/>
+            <test name="HamburgerDB.systemtest.${test}"/>
         </RunJunit>
     </target>
 

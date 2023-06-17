@@ -70,13 +70,13 @@ Recall that the main idea of a cost-based optimizer is to:
 In this lab, you will implement code to perform both of these
 functions.
 
-The optimizer will be invoked from <tt>simpledb/Parser.java</tt>.  You may wish
+The optimizer will be invoked from <tt>HamburgerDB/Parser.java</tt>.  You may wish
 to review the <a href="https://github.com/MIT-DB-Class/simple-db-hw-2021/blob/master/lab2.md#27-query-parser">lab 2 parser exercise</a>
 before starting this lab.  Briefly, if you have a catalog file
 <tt>catalog.txt</tt> describing your tables, you can run the parser by
 typing:
 ```
-java -jar dist/simpledb.jar parser catalog.txt
+java -jar dist/HamburgerDB.jar parser catalog.txt
 ```
 
 When the Parser is invoked, it will compute statistics over all of the
@@ -552,7 +552,7 @@ When you do, please try to include:
 
 * A description of the bug.
 * A <tt>.java</tt> file we can drop in the
-  `test/simpledb` directory, compile, and run.
+  `test/HamburgerDB` directory, compile, and run.
 * A <tt>.txt</tt> file with the data that reproduces the bug.  We should be
   able to convert it to a <tt>.dat</tt> file using `HeapFileEncoder`.
 
